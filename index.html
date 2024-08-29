@@ -1,0 +1,279 @@
+
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE BRAINROT CAR DEALERSHIP, WITTAWAY GOATED</title>
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+    }
+    #container {
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+    }
+    #sidebar {
+        width: 50px;
+        background-color: #000000;
+        transition: width 0.3s ease-in-out;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 1000;
+    }
+    #sidebar.open {
+        width: 250px;
+    }
+    #toggle-btn {
+        width: 50px;
+        height: 50px;
+        background-color: #000000;
+        border: none;
+        cursor: pointer;
+        font-size: 24px;
+        color: #ffffff;
+    }
+    #sidebar-content {
+        padding: 20px;
+        display: none;
+        color: #ffffff;
+        overflow-y: auto;
+    }
+    #sidebar.open #sidebar-content {
+        display: block;
+    }
+    #main-area {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        margin-left: 50px;
+    }
+    #top-video-area, #bottom-video-area {
+        display: flex;
+        justify-content: center;
+        transition: height 0.3s ease-in-out;
+        overflow: hidden;
+    }
+    #middle-area {
+        display: flex;
+        flex-grow: 1;
+    }
+    #left-video-area, #right-video-area {
+        transition: width 0.3s ease-in-out;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    #google-embed {
+        flex-grow: 1;
+        border: none;
+        transition: all 0.3s ease-in-out;
+    }
+    .video-container {
+        transition: all 0.3s ease-in-out;
+        position: relative;
+    }
+    .video-iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+    .video-btn {
+        margin-bottom: 10px;
+        padding: 10px;
+        cursor: pointer;
+        background-color: #333333;
+        color: #ffffff;
+        border: none;
+        width: 100%;
+        text-align: left;
+    }
+    .video-btn:hover {
+        background-color: #444444;
+    }
+    .new-label {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #ff0000;
+        color: #ffffff;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        z-index: 10;
+    }
+</style>
+</head>
+<body>
+    <div id="container">
+        <div id="sidebar">
+            <button id="toggle-btn">▶</button>
+            <div id="sidebar-content">
+                <h3>Video Toggles</h3>
+                <button id="sand-cutting-btn" class="video-btn">Toggle Sand Cutting</button>
+                <button id="hydraulic-press-btn" class="video-btn">Toggle Hydraulic Press</button>
+                <button id="slime-asmr-btn" class="video-btn">Toggle Slime ASMR</button>
+                <button id="family-guy-btn" class="video-btn">Toggle Family Guy</button>
+                <button id="subway-surfers-btn" class="video-btn">Toggle Subway Surfers</button>
+                <button id="minecraft-parkour-btn" class="video-btn">Toggle Minecraft Parkour</button>
+                <button id="gta-car-btn" class="video-btn">Toggle GTA Car Gameplay</button>
+                <button id="among-us-btn" class="video-btn">Toggle Among Us Gameplay</button>
+            </div>
+        </div>
+        <div id="main-area">
+            <div id="top-video-area"></div>
+            <div id="middle-area">
+                <div id="left-video-area"></div>
+                <iframe id="google-embed" src="https://www.google.com/webhp?igu=1" allowfullscreen></iframe>
+                <div id="right-video-area"></div>
+            </div>
+            <div id="bottom-video-area"></div>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const googleEmbed = document.getElementById('google-embed');
+        const leftVideoArea = document.getElementById('left-video-area');
+        const rightVideoArea = document.getElementById('right-video-area');
+        const topVideoArea = document.getElementById('top-video-area');
+        const bottomVideoArea = document.getElementById('bottom-video-area');
+
+        const videos = [
+            { id: 'sand-cutting', src: 'https://www.youtube.com/embed/LjtVRw9af2U?autoplay=1', position: 'left' },
+            { id: 'hydraulic-press', src: 'https://www.youtube.com/embed/q9BtYEnrkg4?autoplay=1', position: 'right' },
+            { id: 'slime-asmr', src: 'https://www.youtube.com/embed/PPiWhzyEbLE?autoplay=1', position: 'top' },
+            { id: 'family-guy', src: 'https://www.youtube.com/embed/JUYle5LXEJM?autoplay=1', position: 'bottom' },
+            { id: 'subway-surfers', src: 'https://www.youtube.com/embed/eRXE8Aebp7s?autoplay=1', position: 'left' },
+            { id: 'minecraft-parkour', src: 'https://www.youtube.com/embed/u7kdVe8q5zs?autoplay=1', position: 'right' },
+            { id: 'gta-car', src: 'https://www.youtube.com/embed/vVJuMq1CMNo?autoplay=1', position: 'top' },
+            { id: 'among-us', src: 'https://www.youtube.com/embed/687oivsH1gs?autoplay=1', position: 'bottom', isNew: true }
+        ];
+
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            toggleBtn.textContent = sidebar.classList.contains('open') ? '◀' : '▶';
+        });
+
+        function createVideoContainer(video) {
+            const container = document.createElement('div');
+            container.id = `${video.id}-container`;
+            container.className = 'video-container';
+            container.style.display = 'none'; // Initially hide all containers
+            container.innerHTML = `
+                <iframe class="video-iframe" src="${video.src}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                ${video.isNew ? '<div class="new-label">NEW</div>' : ''}
+            `;
+            return container;
+        }
+
+        videos.forEach((video) => {
+            const container = createVideoContainer(video);
+            switch (video.position) {
+                case 'left':
+                    leftVideoArea.appendChild(container);
+                    break;
+                case 'right':
+                    rightVideoArea.appendChild(container);
+                    break;
+                case 'top':
+                    topVideoArea.appendChild(container);
+                    break;
+                case 'bottom':
+                    bottomVideoArea.appendChild(container);
+                    break;
+            }
+
+            const btn = document.getElementById(`${video.id}-btn`);
+            btn.addEventListener('click', () => toggleVideo(container, video.position));
+        });
+
+        function toggleVideo(container, position) {
+            const isVisible = container.style.display !== 'none';
+            
+            container.style.display = isVisible ? 'none' : 'flex';
+            
+            if (position === 'left' || position === 'right') {
+                container.style.flexBasis = isVisible ? '0' : '50%';
+            } else {
+                container.style.flexBasis = isVisible ? '0' : '50%';
+            }
+            
+            const iframe = container.querySelector('iframe');
+            if (isVisible) {
+                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+            } else {
+                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            }
+
+            updateLayout();
+        }
+
+        function updateLayout() {
+            const leftVideos = Array.from(leftVideoArea.children).filter(child => child.style.display !== 'none');
+            const rightVideos = Array.from(rightVideoArea.children).filter(child => child.style.display !== 'none');
+            const topVideos = Array.from(topVideoArea.children).filter(child => child.style.display !== 'none');
+            const bottomVideos = Array.from(bottomVideoArea.children).filter(child => child.style.display !== 'none');
+
+            const leftWidth = leftVideos.length > 0 ? 25 : 0;
+            const rightWidth = rightVideos.length > 0 ? 25 : 0;
+            const topHeight = topVideos.length > 0 ? 25 : 0;
+            const bottomHeight = bottomVideos.length > 0 ? 25 : 0;
+
+            leftVideoArea.style.width = `${leftWidth}%`;
+            rightVideoArea.style.width = `${rightWidth}%`;
+            topVideoArea.style.height = `${topHeight}%`;
+            bottomVideoArea.style.height = `${bottomHeight}%`;
+
+            googleEmbed.style.width = `${100 - leftWidth - rightWidth}%`;
+            googleEmbed.style.height = `${100 - topHeight - bottomHeight}%`;
+
+            // Adjust the height of videos in left and right areas
+            const leftRightVideoHeight = 100 / Math.max(leftVideos.length, rightVideos.length);
+            leftVideos.forEach(video => video.style.height = `${leftRightVideoHeight}%`);
+            rightVideos.forEach(video => video.style.height = `${leftRightVideoHeight}%`);
+
+            // Adjust the width of videos in top and bottom areas
+            const topBottomVideoWidth = 100 / Math.max(topVideos.length, bottomVideos.length);
+            topVideos.forEach(video => video.style.width = `${topBottomVideoWidth}%`);
+            bottomVideos.forEach(video => video.style.width = `${topBottomVideoWidth}%`);
+        }
+
+        // Easter egg: Press 'a' to 'i' to toggle videos
+        document.addEventListener('keydown', (event) => {
+            const keyToVideo = {
+                'a': 'sand-cutting',
+                's': 'hydraulic-press',
+                'd': 'slime-asmr',
+                'f': 'family-guy',
+                'g': 'subway-surfers',
+                'h': 'minecraft-parkour',
+                'i': 'gta-car',
+                'j': 'among-us'
+            };
+
+            const videoId = keyToVideo[event.key.toLowerCase()];
+            if (videoId) {
+                const container = document.getElementById(`${videoId}-container`);
+                const video = videos.find(v => v.id === videoId);
+                toggleVideo(container, video.position);
+            }
+        });
+
+        // Set initial layout
+        updateLayout();
+
+        // Remove the gray rectangle by setting the Google embed's background to transparent
+        googleEmbed.style.background = 'transparent';
+    </script>
+</body>
+</html>
